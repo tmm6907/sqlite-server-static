@@ -52,7 +52,7 @@
     .cm-editor {
         height: 100%; /* Ensure editor fills the parent container */
         background-color: #f0f0f0; /* Light gray background */
-        color: #333; /* Text color */
+        color: var(--base-content); /* Text color */
         padding: 8px; /* Add some padding for readability */
         box-sizing: border-box;
         border-radius: 10px; /* Match container's rounded corners */

@@ -1,18 +1,21 @@
-// @ts-check
+// astro.config.mjs
 import { defineConfig } from 'astro/config';
 
-import tailwindcss from '@tailwindcss/vite';
+import svelte from '@astrojs/svelte';
 
 // https://astro.build/config
 export default defineConfig({
-    vite: {
+  vite: {
+      css: {
+          postcss: './postcss.config.js', // Ensure Vite uses your PostCSS config
+      },
       server: {
           watch: {
-              usePolling: true,  // Enable polling if file changes are not detected
-              interval: 100,     // Set polling interval (ms)
+              usePolling: true, // Optional based on your environment
+              interval: 100,
           },
       },
+  },
 
-      plugins: [tailwindcss()],
-    },
+  integrations: [svelte()],
 });

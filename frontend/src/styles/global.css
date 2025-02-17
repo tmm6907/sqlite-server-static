@@ -1,1 +1,20 @@
 @import "tailwindcss";
+@tailwind utilities;
+
+:root {
+    /* --editor-primary: hsl(145, 100%, 50%); */
+    --editor-primary: oklch(var(--s)/1);
+    --editor-accent: oklch(var(--p)/1);
+
+    --color-primary: hsl(332, 100%, 50%);
+}
+
+@theme {
+    --color-primary: var(--color-primary);
+    --color-dark: var(--color-dark);
+    --color-dark-grey: var(--color-dark-grey);
+    --color-white: var(--color-white);
+    --color-light: var(--color-light);
+}
+
+#main-db {}

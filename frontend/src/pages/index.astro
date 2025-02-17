@@ -2,52 +2,47 @@
 import Layout from "../layouts/Layout.astro";
 
 import Editor from "../components/Editor.astro";
-import WelcomeModal from "../components/WelcomeModal.astro";
-
+import CookiesModal from "../components/CookiesModal.astro";
+import LoginModal from "../components/LoginModal.astro";
+var dbs: Array<any> = [];
 var rows: Array<any>;
-var dbs: Array<any>;
-
-try {
-	const response = await fetch("localhost:8000/api/users"); // Replace with your API endpoint
-	rows = await response.json();
-} catch (e) {
-	console.error("No data recieved from server!");
-	rows = [
-		{
-			id: 1,
-			name: "Cy Ganderton",
-			job: "Quality Control Specialist",
-			favoriteColor: "Blue",
-		},
-		{
-			id: 2,
-			name: "Hart Hagerty",
-			job: "Desktop Support Technician",
-			favoriteColor: "Purple",
-		},
-		{
-			id: 3,
-			name: "Brice Swyre",
-			job: "Tax Accountant",
-			favoriteColor: "Red",
-		},
-	];
+async function getUsers() {
+	try {
+		const response = await fetch("/api/users"); // Replace with your API endpoint
+		rows = await response.json();
+	} catch (e) {
+		console.error("No data recieved from server!");
+		rows = [
+			{
+				id: 1,
+				name: "Cy Ganderton",
+				job: "Quality Control Specialist",
+				favoriteColor: "Blue",
+			},
+			{
+				id: 2,
+				name: "Hart Hagerty",
+				job: "Desktop Support Technician",
+				favoriteColor: "Purple",
+			},
+			{
+				id: 3,
+				name: "Brice Swyre",
+				job: "Tax Accountant",
+				favoriteColor: "Red",
+			},
+		];
+	}
 }
-
-try {
-	const response = await fetch("localhost:8000/api/users"); // Replace with your API endpoint
-	dbs = await response.json();
-} catch (e) {
-	console.error("No data recieved from server!");
-	dbs = [];
-}
+getUsers();
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
 <Layout>
-	<WelcomeModal />
+	<CookiesModal />
+	<LoginModal />
 	<div id="window-container" class="grid grid-cols-5 p-4">
 		<div class="row-span-4 p-2">
 			<div class="drawer lg:drawer-open">
@@ -56,7 +51,7 @@ try {
 					<ul
 						class="menu bg-base-200 text-base-content min-h-full w-80 p-4"
 					>
-						<span class="p-2 text-gray-500">Schemas</span>
+						<span class="p-2 text-base-content">Schemas</span>
 						{
 							dbs.length > 0 ? (
 								dbs.map((name) => (
@@ -116,4 +111,32 @@ try {
 	</div>
 </Layout>
 
-<style></style>
+<script>
+	var resText: string;
+	async function checkSession() {
+		var modal = document.getElementById("login-modal");
+		if (!modal) {
+			console.error("no modal element found");
+			return;
+		}
+
+		try {
+			var res;
+			var response = await fetch("api/auth");
+			if (response.status === 401) {
+				res = await response.json();
+				console.error(res.error);
+				modal.showModal();
+			}
+		} catch (e) {
+			console.error("error from server: ", e);
+		}
+	}
+	const modal = document.getElementById("cookies-modal"); // Change to your modal's ID or selector
+
+	// Check if modal is not visible
+	if (!modal || modal.style.display === "none") {
+		checkSession();
+	}
+	// checkSession();
+</script>

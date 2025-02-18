@@ -17,4 +17,6 @@
     --color-light: var(--color-light);
 }
 
-#main-db {}
+.modal-header {
+    font-weight: 600;
+}

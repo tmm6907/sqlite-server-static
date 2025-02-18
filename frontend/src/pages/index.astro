@@ -4,38 +4,8 @@ import Layout from "../layouts/Layout.astro";
 import Editor from "../components/Editor.astro";
 import CookiesModal from "../components/CookiesModal.astro";
 import LoginModal from "../components/LoginModal.astro";
-var dbs: Array<any> = [];
-var rows: Array<any>;
-async function getUsers() {
-	try {
-		const response = await fetch("/api/users"); // Replace with your API endpoint
-		rows = await response.json();
-	} catch (e) {
-		console.error("No data recieved from server!");
-		rows = [
-			{
-				id: 1,
-				name: "Cy Ganderton",
-				job: "Quality Control Specialist",
-				favoriteColor: "Blue",
-			},
-			{
-				id: 2,
-				name: "Hart Hagerty",
-				job: "Desktop Support Technician",
-				favoriteColor: "Purple",
-			},
-			{
-				id: 3,
-				name: "Brice Swyre",
-				job: "Tax Accountant",
-				favoriteColor: "Red",
-			},
-		];
-	}
-}
-getUsers();
-
+import Nav from "../components/Nav.astro";
+var rows: Array<any> = [];
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
@@ -45,29 +15,7 @@ getUsers();
 	<LoginModal />
 	<div id="window-container" class="grid grid-cols-5 p-4">
 		<div class="row-span-4 p-2">
-			<div class="drawer lg:drawer-open">
-				<input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
-				<div class="drawer-side">
-					<ul
-						class="menu bg-base-200 text-base-content min-h-full w-80 p-4"
-					>
-						<span class="p-2 text-base-content">Schemas</span>
-						{
-							dbs.length > 0 ? (
-								dbs.map((name) => (
-									<li class="">
-										<a href="#">{name}</a>
-									</li>
-								))
-							) : (
-								<li class="">
-									<a href="#">No schema available</a>
-								</li>
-							)
-						}
-					</ul>
-				</div>
-			</div>
+			<Nav />
 		</div>
 		<div class="col-span-4">
 			<Editor />
@@ -77,30 +25,26 @@ getUsers();
 				<!-- head -->
 				<thead>
 					{
-						dbs.length > 0 ? (
+						(
 							<tr>
 								<th />
 								<th>Name</th>
 								<th>Job</th>
 								<th>Favorite Color</th>
 							</tr>
-						) : (
-							<tr />
 						)
 					}
 				</thead>
 				<tbody>
 					{
-						dbs.length > 0
-							? rows.map((row) => (
-									<tr class="hover">
-										<th>{row.id}</th>
-										<td>{row.name}</td>
-										<td>{row.job}</td>
-										<td>{row.favoriteColor}</td>
-									</tr>
-								))
-							: ""
+						rows.map((row) => (
+							<tr class="hover">
+								<th>{row.id}</th>
+								<td>{row.name}</td>
+								<td>{row.job}</td>
+								<td>{row.favoriteColor}</td>
+							</tr>
+						))
 					}
 				</tbody>
 			</table>

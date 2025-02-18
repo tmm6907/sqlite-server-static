@@ -113,9 +113,7 @@
 
 <dialog id="login-modal" class="modal">
     <div class="modal-box">
-        <h3 class="text-xl text-secondary" style="font-weight: 600;">
-            Login/Sign-Up
-        </h3>
+        <h3 class="text-xl text-secondary modal-header">Login/Sign-Up</h3>
         <p class="py-4">Enter user credentials or sign-up:</p>
         <form id="login-form" action="#">
             <h3 class="text-primary font-bold">Login</h3>

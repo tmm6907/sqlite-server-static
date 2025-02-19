@@ -38,11 +38,16 @@
     });
 </script>
 
-<div id="sql-editor" class="editor-container"></div>
+<div class="grid grid-cols-5">
+    <div class="relative">
+        <button class="btn btn-success absolute bottom-0 right-4">Run</button>
+    </div>
+    <div id="sql-editor"></div>
+</div>
 
 <style>
     #sql-editor {
-        @apply w-[75ch] min-h-[10rem] overflow-auto border mx-auto;
+        @apply w-[75ch] min-h-[10rem] overflow-auto border;
         border-color: var(--border-neutral-400);
         border-radius: var(--radius-lg);
         color: var(--text-white);

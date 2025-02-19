@@ -56,7 +56,6 @@ var rows: Array<any> = [];
 </Layout>
 
 <script>
-	var resText: string;
 	async function checkSession() {
 		var modal = document.getElementById("login-modal");
 		if (!modal) {
@@ -82,5 +81,4 @@ var rows: Array<any> = [];
 	if (!modal || modal.style.display === "none") {
 		checkSession();
 	}
-	// checkSession();
 </script>

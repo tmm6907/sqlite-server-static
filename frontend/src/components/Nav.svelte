@@ -1,8 +1,10 @@
 <script>
     import { onMount } from "svelte";
+    import { triggerAlert } from "../stores/alertStore";
     var tables = [];
     var databases = [];
     var modal;
+    let openDBName = ""; // Track the currently open database
 
     // Fetch tables from the API
     async function getTables(dbName) {
@@ -33,7 +35,12 @@
     }
 
     async function render() {
-        console.log("rendering");
+        await getDatabases();
+        await getTables();
+    }
+
+    async function renderWithAlert() {
+        triggerAlert("Schemas refreshed successfully!");
         await getDatabases();
         await getTables();
     }
@@ -82,14 +89,32 @@
         }
     }
 
+    function handleToggle(event, index, dbName) {
+        if (event.target.open === false) return;
+        openDBName = dbName;
+        let dbElements = document.querySelectorAll(".nav-menu-item");
+        dbElements.forEach((el, i) => {
+            if (i !== index) el.open = false;
+            else {
+            }
+            i !== index ? (el.open = false) : console.log("Selected: ", i);
+        });
+    }
+
     // Show the modal on mount
     onMount(() => {
         render();
+        // Update sessionStorage whenever openDBName changes
+        openDBName = sessionStorage.getItem("openDBName") || "";
+        $: {
+            sessionStorage.setItem("openDBName", openDBName);
+        }
 
         document.addEventListener("submit", (e) => {
             if (e.target.id === "db-form") {
                 e.preventDefault();
                 createDB(e.target);
+                render();
             }
         });
     });
@@ -226,7 +251,7 @@
                 </label>
             </div>
             <div class="modal-action btn-group">
-                <button id="create-db-btn" class="btn" type="button"
+                <button id="cancel-db-btn" class="btn" type="button"
                     >Cancel</button
                 >
                 <button id="create-db-btn" class="btn btn-primary" type="submit"
@@ -241,22 +266,33 @@
     <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
     <div class="drawer-side">
         <ul class="menu bg-base-200 text-base-content min-h-full w-80 p-4">
-            <div class="flex justify-between">
-                <span class="p-2 text-base-content">Schemas</span>
+            <div class="flex justify-between pt-2 pb-4">
+                <span class="p-2 text-base-content"
+                    >Schemas <button
+                        class="btn btn-xs btn-neutral"
+                        on:click={renderWithAlert}
+                    >
+                        <i class="fa-solid fa-arrows-rotate"></i></button
+                    ></span
+                >
                 <button class="btn btn-sm btn-neutral" on:click={openDB}
                     ><i class="fa-solid fa-plus"></i>New DB</button
                 >
             </div>
             <li>
                 {#if databases.length > 0}
-                    {#each databases as dbName}
-                        {#if tables.length > 0}
-                            <details open>
-                                <summary
-                                    ><i class="fa-solid fa-database"
-                                    ></i>{dbName}</summary
-                                >
-                                <ul>
+                    {#each databases as dbName, index}
+                        <details
+                            open={index === 0}
+                            class="nav-menu-item open:outline open:outline-accent"
+                            on:toggle={(e) => handleToggle(e, index, dbName)}
+                        >
+                            <summary
+                                ><i class="fa-solid fa-database"
+                                ></i>{dbName}</summary
+                            >
+                            <ul>
+                                {#if tables.length > 0}
                                     {#each tables as name}
                                         <li>
                                             <div>
@@ -266,14 +302,11 @@
                                             </div>
                                         </li>
                                     {/each}
-                                </ul>
-                            </details>
-                        {:else}
-                            <div>
-                                <i class="fa-solid fa-database"></i>
-                                <a href="#">{dbName}</a>
-                            </div>
-                        {/if}
+                                {:else}
+                                    <li>No tables found</li>
+                                {/if}
+                            </ul>
+                        </details>
                     {/each}
                 {:else}
                     No databases found
@@ -282,3 +315,6 @@
         </ul>
     </div>
 </div>
+
+<style>
+</style>

@@ -5,6 +5,7 @@ import Editor from "../components/Editor.astro";
 import CookiesModal from "../components/CookiesModal.astro";
 import LoginModal from "../components/LoginModal.astro";
 import Nav from "../components/Nav.astro";
+import Table from "../components/Table.astro";
 var rows: Array<any> = [];
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
@@ -21,33 +22,7 @@ var rows: Array<any> = [];
 			<Editor />
 		</div>
 		<div class="col-span-4">
-			<table id="main-db" class="table active">
-				<!-- head -->
-				<thead>
-					{
-						(
-							<tr>
-								<th />
-								<th>Name</th>
-								<th>Job</th>
-								<th>Favorite Color</th>
-							</tr>
-						)
-					}
-				</thead>
-				<tbody>
-					{
-						rows.map((row) => (
-							<tr class="hover">
-								<th>{row.id}</th>
-								<td>{row.name}</td>
-								<td>{row.job}</td>
-								<td>{row.favoriteColor}</td>
-							</tr>
-						))
-					}
-				</tbody>
-			</table>
+			<Table />
 			<div></div>
 			<div></div>
 			<div></div>

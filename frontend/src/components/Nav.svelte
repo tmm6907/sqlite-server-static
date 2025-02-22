@@ -1,49 +1,22 @@
 <script>
     import { onMount } from "svelte";
-    import { triggerAlert } from "../stores/alertStore";
-    var tables = [];
-    var databases = [];
+    import {
+        navDataStore,
+        renderNavDataWithAlert,
+        renderNavData,
+    } from "../stores/renderNav";
+    import { dbNameStore } from "../stores/dbNameStore";
     var modal;
-    let openDBName = ""; // Track the currently open database
+    let openDBName = "main";
 
-    // Fetch tables from the API
-    async function getTables(dbName) {
-        try {
-            const response = await fetch("/api/table?name=" + dbName); // Replace with your API endpoint
-            const res = await response.json();
-            if (res.tables) {
-                tables = [...res.tables];
-                console.log(tables);
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    }
+    dbNameStore.set(openDBName);
 
-    async function getDatabases() {
-        try {
-            const response = await fetch("/api/db"); // Replace with your API endpoint
-            const res = await response.json();
-            if (res.databases && res.databases !== databases) {
-                databases = [...res.databases];
-                console.log(databases);
-            }
-            databases.map((dbName) => getTables(dbName));
-        } catch (e) {
-            console.error(e);
-        }
-    }
+    let databases = {};
 
-    async function render() {
-        await getDatabases();
-        await getTables();
-    }
-
-    async function renderWithAlert() {
-        triggerAlert("Schemas refreshed successfully!");
-        await getDatabases();
-        await getTables();
-    }
+    navDataStore.subscribe((data) => {
+        console.log("Databases: ", data.databases);
+        databases = data.databases;
+    });
 
     function openDB() {
         if (modal) {
@@ -82,16 +55,22 @@
                 var res = await response.json();
                 console.log(res.message);
                 modal.close();
-                render();
+                renderNavDataWithAlert("DB created successfully!");
             }
         } catch (e) {
             console.error(e);
         }
     }
+    function refreshSchema() {
+        navDataStore.set({ databases: {} });
+        renderNavDataWithAlert("Schema refreshed successfully!");
+    }
 
     function handleToggle(event, index, dbName) {
         if (event.target.open === false) return;
         openDBName = dbName;
+        sessionStorage.setItem("openDBName", openDBName);
+        dbNameStore.set(openDBName);
         let dbElements = document.querySelectorAll(".nav-menu-item");
         dbElements.forEach((el, i) => {
             if (i !== index) el.open = false;
@@ -103,9 +82,8 @@
 
     // Show the modal on mount
     onMount(() => {
-        render();
         // Update sessionStorage whenever openDBName changes
-        openDBName = sessionStorage.getItem("openDBName") || "";
+        openDBName = sessionStorage.getItem("openDBName") || openDBName;
         $: {
             sessionStorage.setItem("openDBName", openDBName);
         }
@@ -114,7 +92,7 @@
             if (e.target.id === "db-form") {
                 e.preventDefault();
                 createDB(e.target);
-                render();
+                navData = renderNavData();
             }
         });
     });
@@ -265,23 +243,27 @@
 <div class="drawer lg:drawer-open">
     <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
     <div class="drawer-side">
-        <ul class="menu bg-base-200 text-base-content min-h-full w-80 p-4">
-            <div class="flex justify-between pt-2 pb-4">
-                <span class="p-2 text-base-content"
-                    >Schemas <button
+        <ul
+            class="menu bg-base-200 text-base-content min-h-full min-w-[32ch] p-4"
+        >
+            <div class="flex justify-between p-2 text-base-content">
+                <div>
+                    <span>Schemas</span>
+                    <button
                         class="btn btn-xs btn-neutral"
-                        on:click={renderWithAlert}
+                        on:click={refreshSchema}
+                        ><i class="fa-solid fa-arrows-rotate"></i></button
                     >
-                        <i class="fa-solid fa-arrows-rotate"></i></button
-                    ></span
-                >
-                <button class="btn btn-sm btn-neutral" on:click={openDB}
-                    ><i class="fa-solid fa-plus"></i>New DB</button
-                >
+                </div>
+                <div>
+                    <button class="btn btn-xs btn-neutral" on:click={openDB}
+                        ><i class="fa-solid fa-plus"></i>New DB</button
+                    >
+                </div>
             </div>
-            <li>
-                {#if databases.length > 0}
-                    {#each databases as dbName, index}
+            <li id="nav-item-list">
+                {#if Object.keys(databases).length > 0}
+                    {#each Object.keys(databases) as dbName, index}
                         <details
                             open={index === 0}
                             class="nav-menu-item open:outline open:outline-accent"
@@ -292,8 +274,8 @@
                                 ></i>{dbName}</summary
                             >
                             <ul>
-                                {#if tables.length > 0}
-                                    {#each tables as name}
+                                {#if databases[dbName].length > 0}
+                                    {#each databases[dbName] as name}
                                         <li>
                                             <div>
                                                 <i class="fa-solid fa-table"
@@ -309,7 +291,11 @@
                         </details>
                     {/each}
                 {:else}
-                    No databases found
+                    <div class="flex justify-center">
+                        <span class="loading loading-spinner loading-md mx-auto"
+                        ></span>
+                        <span>Loading Schema</span>
+                    </div>
                 {/if}
             </li>
         </ul>

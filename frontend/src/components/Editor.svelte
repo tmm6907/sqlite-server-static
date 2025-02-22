@@ -13,12 +13,25 @@
     import { syntaxHighlighting } from "@codemirror/language";
     import { queryResults } from "../stores/queryResults";
     import { triggerAlert } from "../stores/alertStore";
+    import { renderNavData, renderNavDataWithAlert } from "../util/renderNav";
+    import { dbNameStore } from "../stores/dbNameStore";
+    import Import from "./Import.svelte";
+    import Export from "./Export.svelte";
 
     /** @type EditorView*/
     let editorView;
+    let db;
+    let dbInput;
+
+    dbNameStore.subscribe((data) => {
+        db = data;
+        dbInput = db;
+    });
 
     // Lifecycle function that runs after the component is mounted
     onMount(() => {
+        let db = sessionStorage.getItem("openDBName") || "";
+
         let customHighlightStyle = HighlightStyle.define([
             { tag: tags.keyword, color: "var(--editor-primary)" },
             { tag: tags.string, color: "var(--editor-accent)" }, // Example additional style // Example customization
@@ -56,79 +69,66 @@
         if (query.length === 0) {
             triggerAlert("Query cannot be empty!", "alert-danger");
         }
+
+        let payload = {
+            db: db != "" ? (db != "main" ? db : "") : "",
+            query: query,
+        };
+        console.log("Payload: ", payload);
         let resp = await fetch("/api/query", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ query: query }),
+            body: JSON.stringify(payload),
         });
         let res = await resp.json();
         if (resp.status > 400) {
             console.error(res.error);
         }
         if (res.results) {
-            console.log(res.results);
-            queryResults.set(res.results);
-            editorView.dispatch({
-                changes: {
-                    from: 0,
-                    to: editorView.state.doc.length,
-                    insert: "",
-                },
+            console.log("Res: ", res.results);
+            queryResults.set({
+                pks: res.pks,
+                results: res.results,
             });
+            triggerAlert("Query successful!");
         } else {
-            triggerAlert("Rows affected: ", res.rowsAffected);
-            editorView.dispatch({
-                changes: {
-                    from: 0,
-                    to: editorView.state.doc.length,
-                    insert: "",
-                },
+            let msg = "Rows affected: " + res.rowsAffected;
+            queryResults.set({
+                pks: [],
+                results: [],
             });
+            triggerAlert(msg);
         }
+        renderNavData();
+        editorView.dispatch({
+            changes: {
+                from: 0,
+                to: editorView.state.doc.length,
+                insert: "",
+            },
+        });
     }
 </script>
 
 <div class="grid grid-cols-5">
-    <div class="relative">
-        <button
-            class="btn btn-success absolute bottom-0 right-4"
-            on:click={runQuery}>Run</button
-        >
+    <div class="col-span-1 flex justify-end">
+        <div class="h-fit mt-auto">
+            <div class="w-full flex gap-2">
+                <Import />
+                <Export />
+                <button class="btn btn-sm btn-success" on:click={runQuery}
+                    >Run <i class="fa-solid fa-play text-sm"></i></button
+                >
+            </div>
+        </div>
     </div>
-    <div id="sql-editor"></div>
+    <div class=" col-span-3">
+        <div
+            id="sql-editor"
+            class="w-[75ch] min-h-[10rem] mx-auto overflow-auto outline rounded p-1"
+        ></div>
+    </div>
+    <div class="col-span-1"></div>
 </div>
-
-<style>
-    #sql-editor {
-        @apply w-[75ch] min-h-[10rem] overflow-auto border;
-        border-color: var(--border-neutral-400);
-        border-radius: var(--radius-lg);
-        color: var(--text-white);
-    }
-
-    /* CodeMirror-specific styling */
-    .cm-editor {
-        height: 100%; /* Ensure editor fills the parent container */
-        background-color: #f0f0f0; /* Light gray background */
-        color: var(--base-content); /* Text color */
-        padding: 8px; /* Add some padding for readability */
-        box-sizing: border-box;
-        border-radius: 10px; /* Match container's rounded corners */
-    }
-
-    .cm-content {
-        font-size: 14px; /* Change text size */
-        line-height: 1.5; /* Adjust line spacing */
-        color: #000;
-    }
-    .cm-line {
-        caret-color: #fff;
-    }
-
-    /* Add hover effect */
-    #sql-editor:hover {
-        box-shadow: 0 0 10px #00000033;
-    }
-</style>

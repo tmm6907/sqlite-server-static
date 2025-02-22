@@ -6,7 +6,7 @@ import CookiesModal from "../components/CookiesModal.astro";
 import LoginModal from "../components/LoginModal.astro";
 import Nav from "../components/Nav.astro";
 import Table from "../components/Table.astro";
-var rows: Array<any> = [];
+
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
@@ -14,46 +14,13 @@ var rows: Array<any> = [];
 <Layout>
 	<CookiesModal />
 	<LoginModal />
-	<div id="window-container" class="grid grid-cols-5 p-4">
-		<div class="row-span-4 p-2">
+	<div class="grid grid-cols-5 p-4">
+		<aside>
 			<Nav />
-		</div>
-		<div class="col-span-4">
+		</aside>
+		<main class="col-span-4">
 			<Editor />
-		</div>
-		<div class="col-span-4">
 			<Table />
-			<div></div>
-			<div></div>
-			<div></div>
-		</div>
+		</main>
 	</div>
 </Layout>
-
-<script>
-	async function checkSession() {
-		var modal = document.getElementById("login-modal");
-		if (!modal) {
-			console.error("no modal element found");
-			return;
-		}
-
-		try {
-			var res;
-			var response = await fetch("api/auth");
-			if (response.status === 401) {
-				res = await response.json();
-				console.error(res.error);
-				modal.showModal();
-			}
-		} catch (e) {
-			console.error("error from server: ", e);
-		}
-	}
-	const modal = document.getElementById("cookies-modal"); // Change to your modal's ID or selector
-
-	// Check if modal is not visible
-	if (!modal || modal.style.display === "none") {
-		checkSession();
-	}
-</script>

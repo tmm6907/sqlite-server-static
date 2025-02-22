@@ -1,5 +1,6 @@
 <script>
     import { onMount } from "svelte";
+    import { renderNavData } from "../stores/renderNav";
 
     async function login(user, pass) {
         var modal = document.getElementById("login-modal");
@@ -20,6 +21,7 @@
                 console.error(res.error);
             } else {
                 modal.close();
+                renderNavData();
             }
         } catch (e) {
             console.error(e);
@@ -45,6 +47,7 @@
                 console.error(res.error);
             } else {
                 modal.close();
+                renderNavData();
             }
         } catch (e) {
             console.error(e);

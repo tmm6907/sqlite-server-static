@@ -7,18 +7,25 @@
     let show = false;
     // Subscribe to the store
     alertStore.subscribe((alert) => {
-        console.log("Alert show state:", show);
         msg = alert.msg;
         type = alert.type;
-        show = alert.show;
+        if (alert.show) {
+            show = true;
+            clearTimeout(timeout); // Clear any existing timeout
+            timeout = setTimeout(() => {
+                show = false;
+            }, 3000); // Automatically hide the alert after 3 seconds
+        } else {
+            show = false;
+        }
     });
 </script>
 
 {#if show}
     <div
         role="alert"
-        class="alert {type} max-w-[60ch] absolute top-16 left-[35%] z-20"
-        transition:fly={{ y: -100, duration: 500 }}
+        class="alert {type} max-w-[60ch] fixed top-16 left-[50%] transform -translate-x-1/2 z-20 shadow-lg"
+        transition:fly={{ y: -50, duration: 500 }}
     >
         <svg
             xmlns="http://www.w3.org/2000/svg"

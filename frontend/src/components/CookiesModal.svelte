@@ -1,13 +1,15 @@
 <script>
     import { onMount } from "svelte";
+    import { checkSession } from "../stores/checkSession";
+    import { renderNavData } from "../stores/renderNav";
 
     function open() {
+        console.log("opening cookies");
         var modal = document.getElementById("cookies-modal");
         modal.showModal();
     }
 
     function close() {
-        console.log("closing");
         var modal = document.getElementById("cookies-modal");
         var options = modal.querySelectorAll("input[type='checkbox']:checked");
         var selected = [];
@@ -15,8 +17,9 @@
             let span = option.parentElement.querySelector("span.label-text");
             if (span) selected.push(span.textContent);
         });
-        // TODO: Handle cookies
         modal.close();
+        checkSession();
+        renderNavData();
     }
 
     function customizeCookies() {
@@ -25,28 +28,16 @@
         var customizeTempl = document.querySelector("#customize-template");
         content.innerHTML = customizeTempl.innerHTML;
     }
-    async function checkSession() {
-        var modal = document.getElementById("login-modal");
-        if (!modal) {
-            console.error("no modal element found");
-            return;
-        }
-
-        try {
-            var res;
-            var response = await fetch("api/auth");
-            if (response.status === 401) {
-                res = await response.json();
-                console.error(res.error);
-                modal.showModal();
-            }
-        } catch (e) {
-            console.error("error from server: ", e);
-        }
-    }
 
     onMount(() => {
-        open();
+        try {
+            checkSession();
+            renderNavData();
+        } catch (e) {
+            open();
+            console.error("Session check failed:", e);
+        }
+
         document.addEventListener("click", (event) => {
             let target = event.target;
             if (
@@ -55,7 +46,6 @@
                     target.id == "accept-cookies")
             ) {
                 close();
-                checkSession();
             }
         });
     });
@@ -78,7 +68,9 @@
                     class="btn"
                     onclick={customizeCookies}>Customize</button
                 >
-                <button id="reject-cookies" class="btn">Reject All</button>
+                <button id="reject-cookies" class="btn" onclick={close}
+                    >Reject All</button
+                >
                 <button
                     id="accept-cookies"
                     class="btn btn-primary"

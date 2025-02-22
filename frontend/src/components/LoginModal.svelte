@@ -113,13 +113,11 @@
 
 <dialog id="login-modal" class="modal">
     <div class="modal-box">
-        <h3 class="text-xl text-secondary" style="font-weight: 600;">
-            Login/Sign-Up
-        </h3>
+        <h3 class="text-xl text-secondary modal-header">Login/Sign-Up</h3>
         <p class="py-4">Enter user credentials or sign-up:</p>
-        <form id="login-form" action="#">
+        <form id="login-form" class="form-control" action="#">
             <h3 class="text-primary font-bold">Login</h3>
-            <div class="form-control max-w-[48ch]">
+            <div class="max-w-[48ch]">
                 <label for="username" class="label cursor-pointer">
                     <span>Username</span>
                     <input
@@ -141,7 +139,7 @@
             </div>
             <div class="py-4"><span>- OR -</span></div>
             <h3 class="text-primary font-bold">Sign-Up</h3>
-            <div class="form-control max-w-[48ch]">
+            <div class="max-w-[48ch]">
                 <label for="signup_username" class="label cursor-pointer">
                     <span>Username</span>
                     <input

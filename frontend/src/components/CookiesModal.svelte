@@ -15,7 +15,6 @@
             let span = option.parentElement.querySelector("span.label-text");
             if (span) selected.push(span.textContent);
         });
-        console.log(selected, selected.length);
         // TODO: Handle cookies
         modal.close();
     }
@@ -64,7 +63,7 @@
 
 <dialog id="cookies-modal" class="modal">
     <div class="modal-box">
-        <h3 class="text-xl text-secondary" style="font-weight: 600;">
+        <h3 class="text-xl text-secondary modal-header">
             We value your privacy!
         </h3>
         <p class="py-4">

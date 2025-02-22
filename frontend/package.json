@@ -11,7 +11,6 @@
   "dependencies": {
     "@astrojs/svelte": "^7.0.4",
     "@codemirror/commands": "^6.8.0",
-    "@codemirror/highlight": "^0.19.8",
     "@codemirror/lang-sql": "^6.8.0",
     "@codemirror/language": "^6.10.8",
     "@codemirror/state": "^6.5.2",
@@ -27,5 +26,8 @@
     "svelte": "^5.20.1",
     "tailwindcss": "^4.0.6",
     "typescript": "^5.7.3"
+  },
+  "devDependencies": {
+    "rollup": "^4.34.8"
   }
 }

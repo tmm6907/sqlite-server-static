@@ -67,7 +67,8 @@
         }
         let query = editorView.state.doc.toString();
         if (query.length === 0) {
-            triggerAlert("Query cannot be empty!", "alert-danger");
+            triggerAlert("Query cannot be empty!", "alert-error");
+            return;
         }
 
         let payload = {
@@ -83,8 +84,10 @@
             body: JSON.stringify(payload),
         });
         let res = await resp.json();
-        if (resp.status > 400) {
+        if (resp.status >= 400) {
+            triggerAlert("Query failed!", "alert-error");
             console.error(res.error);
+            return;
         }
         if (res.results) {
             console.log("Res: ", res.results);
@@ -112,11 +115,11 @@
     }
 </script>
 
-<div class="grid grid-cols-5">
-    <div class="col-span-1 flex justify-end">
+<div class="grid grid-cols-7">
+    <div class="col-span-2 flex gap-1 justify-center">
         <div class="h-fit mt-auto">
-            <div class="w-full flex gap-2">
-                <Import />
+            <Import />
+            <div class="w-full grid grid-cols-2">
                 <Export />
                 <button class="btn btn-sm btn-success" on:click={runQuery}
                     >Run <i class="fa-solid fa-play text-sm"></i></button
@@ -127,8 +130,8 @@
     <div class=" col-span-3">
         <div
             id="sql-editor"
-            class="w-[75ch] min-h-[10rem] mx-auto overflow-auto outline rounded p-1"
+            class="min-h-[10rem] overflow-auto outline rounded p-1"
         ></div>
     </div>
-    <div class="col-span-1"></div>
+    <div class="col-span-2"></div>
 </div>

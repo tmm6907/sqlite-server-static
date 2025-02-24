@@ -4,42 +4,23 @@ import { triggerAlert } from "./alertStore";
 export const navDataStore = writable({
     databases: {}
 });
-async function getTables(dbName) {
-    try {
-        let url = "/api/table?name=" + dbName
-        console.log("URL: ", url)
-        const response = await fetch(url); // Replace with your API endpoint
-        const res = await response.json();
-        return res.tables ? [...res.tables] : []
-    } catch (e) {
-        console.error(e);
-    }
-}
 
 async function getDatabases() {
     try {
-        const response = await fetch("/api/db"); // Replace with your API endpoint
+        const response = await fetch("/api/nav"); // Replace with your API endpoint
         const res = await response.json();
-        if (res.databases) {
-            const databases = {};
-            for (let dbName of res.databases) {
-                console.log(dbName);
-                const tables = await getTables(dbName);
-                databases[dbName] = tables;
-            }
-            navDataStore.set({ databases });
+        if (res.results) {
+            navDataStore.set({ databases: res.results });
         }
 
     } catch (e) {
+        triggerAlert(("Failed to retrieve database data!", "alert-error"))
         console.error(e);
+        throw new Error(e)
     }
 }
 
 export async function renderNavData() {
-    // let placeholder = `
-
-    // `
-    // document.querySelector("#nav-item-list").innerHTML = placeholder;
     await getDatabases();
 }
 

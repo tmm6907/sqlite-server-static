@@ -18,7 +18,7 @@
 </script>
 
 <div class="dropdown">
-    <div tabindex="0" role="button" class="btn btn-sm">Export</div>
+    <div tabindex="0" role="button" class="btn btn-sm w-full">Export</div>
     <ul
         id="db-export"
         class="menu dropdown-content bg-neutral rounded-box z-20 min-w-[24ch] p-2 shadow"

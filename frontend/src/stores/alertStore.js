@@ -7,7 +7,7 @@ export const alertStore = writable({
     duration: 3000,
 });
 export function triggerAlert(msg, type = "alert-success", duration = 3000) {
-    alertStore.set({ msg, type, show: true });
+    alertStore.set({ msg, type, show: true, duration });
     setTimeout(() => {
         alertStore.set({ msg: "", type, show: false });
     }, duration);

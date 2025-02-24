@@ -67,7 +67,8 @@
         }
         let query = editorView.state.doc.toString();
         if (query.length === 0) {
-            triggerAlert("Query cannot be empty!", "alert-danger");
+            triggerAlert("Query cannot be empty!", "alert-error");
+            return;
         }
 
         let payload = {
@@ -83,8 +84,10 @@
             body: JSON.stringify(payload),
         });
         let res = await resp.json();
-        if (resp.status > 400) {
+        if (resp.status >= 400) {
+            triggerAlert("Query failed!", "alert-error");
             console.error(res.error);
+            return;
         }
         if (res.results) {
             console.log("Res: ", res.results);

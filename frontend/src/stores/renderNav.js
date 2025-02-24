@@ -12,7 +12,9 @@ async function getTables(dbName) {
         const res = await response.json();
         return res.tables ? [...res.tables] : []
     } catch (e) {
+        triggerAlert(("Failed to retrieve table data!", "alert-error"))
         console.error(e);
+        throw new Error(e)
     }
 }
 
@@ -31,7 +33,9 @@ async function getDatabases() {
         }
 
     } catch (e) {
+        triggerAlert(("Failed to retrieve database data!", "alert-error"))
         console.error(e);
+        throw new Error(e)
     }
 }
 

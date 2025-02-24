@@ -4,17 +4,13 @@
 
     let msg = "";
     let type = "alert-success";
-    let show = false;
+    let show = true;
     // Subscribe to the store
     alertStore.subscribe((alert) => {
         msg = alert.msg;
         type = alert.type;
         if (alert.show) {
             show = true;
-            clearTimeout(timeout); // Clear any existing timeout
-            timeout = setTimeout(() => {
-                show = false;
-            }, 3000); // Automatically hide the alert after 3 seconds
         } else {
             show = false;
         }
@@ -24,7 +20,7 @@
 {#if show}
     <div
         role="alert"
-        class="alert {type} max-w-[60ch] fixed top-16 left-[50%] transform -translate-x-1/2 z-20 shadow-lg"
+        class="alert {type} max-w-[48ch] fixed top-8 left-[85%] transform -translate-x-1/2 z-20 shadow-lg"
         transition:fly={{ y: -50, duration: 500 }}
     >
         <svg
